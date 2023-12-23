@@ -1,24 +1,29 @@
 import io.qameta.allure.Description;
-import org.json.simple.JSONObject;
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
+import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.io.IOException;
 
 import static io.restassured.RestAssured.given;
 
-public class Test07_PostCreate {
+public class Test06_GetSingleResourceNotFound extends ResponseFile{
     @Test
-    @Description("Проверка после создания пользователя")
-    public void create(){
-        JSONObject request = new JSONObject();
-        request.put("name","JOHN");
-        request.put("job","BA");
+    @Description("Цвет не найден")
+    public void getSingleResourceNotFOund() throws IOException {
+        Response response = RestAssured.get("https://reqres.in/api/unknown/23");
 
-        System.out.println(request);
+        System.out.println(response.statusLine());
+        responseMethod(response.asString());
 
-        given().
-                body(request.toJSONString())
-                .when()
-                .post("https://reqres.in/api/users")
+        int statusCode =  response.statusCode();
+        Assert.assertEquals(statusCode,404);
+
+        given().get("https://reqres.in/api/unknown/23")
                 .then()
-                .statusCode(201);
+                .statusCode(404);
+
     }
 }
+
